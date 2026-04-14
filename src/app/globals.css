@@ -5,3 +5,14 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
