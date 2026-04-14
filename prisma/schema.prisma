@@ -7,6 +7,18 @@ datasource db {
   url       = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("employee") // "admin" | "manager" | "employee"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements Movement[]
+}
+
 model Product {
   id          String      @id @default(cuid())
   name        String
@@ -32,9 +44,12 @@ model Movement {
   reason    String   @default("")
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 
   @@index([productId])
   @@index([type])
   @@index([createdAt])
+  @@index([userId])
 }

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -6,6 +7,24 @@ async function main() {
 
   await prisma.movement.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create users
+  const adminPass = await bcrypt.hash("admin123", 12);
+  const managerPass = await bcrypt.hash("manager123", 12);
+  const employeePass = await bcrypt.hash("employee123", 12);
+
+  const admin = await prisma.user.create({
+    data: { email: "admin@stockcontrol.com", password: adminPass, name: "Administrador", role: "admin" },
+  });
+  const manager = await prisma.user.create({
+    data: { email: "gestor@stockcontrol.com", password: managerPass, name: "María García", role: "manager" },
+  });
+  const employee = await prisma.user.create({
+    data: { email: "empleado@stockcontrol.com", password: employeePass, name: "Carlos López", role: "employee" },
+  });
+
+  console.log(`✅ Created 3 users (admin, manager, employee)`);
 
   const products = [
     { name: "Laptop HP ProBook 450", sku: "LAP-HP-001", category: "Electrónica", unit: "unidad", price: 12500, stock: 15, minStock: 5, description: "Laptop empresarial i5, 16GB RAM, 512GB SSD" },
@@ -22,21 +41,23 @@ async function main() {
     { name: "Escritorio Ajustable", sku: "ESC-AJ-001", category: "Mobiliario", unit: "unidad", price: 7800, stock: 4, minStock: 2, description: "Escritorio sit-stand eléctrico 120x60cm" },
   ];
 
+  const userIds = [admin.id, manager.id, employee.id];
+
   for (const p of products) {
     const product = await prisma.product.create({ data: p });
 
     // Create some movements for each product
     await prisma.movement.create({
-      data: { type: "entry", quantity: p.stock + 10, reason: "Stock inicial", productId: product.id },
+      data: { type: "entry", quantity: p.stock + 10, reason: "Stock inicial", productId: product.id, userId: userIds[Math.floor(Math.random() * userIds.length)] },
     });
     if (Math.random() > 0.3) {
       await prisma.movement.create({
-        data: { type: "exit", quantity: Math.floor(Math.random() * 8) + 1, reason: "Venta", productId: product.id },
+        data: { type: "exit", quantity: Math.floor(Math.random() * 8) + 1, reason: "Venta", productId: product.id, userId: userIds[Math.floor(Math.random() * userIds.length)] },
       });
     }
     if (Math.random() > 0.5) {
       await prisma.movement.create({
-        data: { type: "exit", quantity: Math.floor(Math.random() * 5) + 1, reason: "Transferencia a sucursal", productId: product.id },
+        data: { type: "exit", quantity: Math.floor(Math.random() * 5) + 1, reason: "Transferencia a sucursal", productId: product.id, userId: userIds[Math.floor(Math.random() * userIds.length)] },
       });
     }
   }
