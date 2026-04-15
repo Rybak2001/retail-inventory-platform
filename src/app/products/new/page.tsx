@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -30,12 +31,13 @@ export default function NewProductPage() {
     });
 
     if (res.ok) {
+      toast.success('Producto creado exitosamente');
       router.push("/products");
       router.refresh();
     } else {
       const err = await res.json();
       setSaving(false);
-      alert(err.error || "Error al crear producto");
+      toast.error(err.error || "Error al crear producto");
     }
   }
 

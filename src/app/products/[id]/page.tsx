@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface Movement {
   id: string;
@@ -60,11 +61,12 @@ export default function ProductDetailPage() {
     });
 
     if (res.ok) {
+      toast.success('Movimiento registrado');
       loadProduct();
       e.currentTarget.reset();
     } else {
       const err = await res.json();
-      alert(err.error || "Error");
+      toast.error(err.error || "Error");
     }
     setSaving(false);
   }
@@ -74,6 +76,7 @@ export default function ProductDetailPage() {
 
     const res = await fetch(`/api/products/${params.id}`, { method: "DELETE" });
     if (res.ok) {
+      toast.success('Producto eliminado');
       router.push("/products");
       router.refresh();
     }
