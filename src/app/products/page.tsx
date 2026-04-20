@@ -115,6 +115,9 @@ export default async function ProductsPage({
                 <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase">
                   Categoría
                 </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase">
+                  Imagen
+                </th>
                 <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase">
                   Stock
                 </th>
@@ -141,6 +144,25 @@ export default async function ProductsPage({
                   </td>
                   <td className="px-5 py-3 text-sm text-gray-500 font-mono">{product.sku}</td>
                   <td className="px-5 py-3 text-sm text-gray-600">{product.categoryName}</td>
+                  <td className="px-5 py-3">
+                    {product.image ? (
+                      <div className="flex flex-col gap-0.5 max-w-[180px]">
+                        <a
+                          href={product.image}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-brand-600 hover:text-brand-800 hover:underline font-mono truncate block"
+                          title={product.image}
+                        >
+                          {product.image.length > 35
+                            ? "…" + product.image.slice(-32)
+                            : product.image}
+                        </a>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-300 italic">Sin imagen</span>
+                    )}
+                  </td>
                   <td className="px-5 py-3 text-right">
                     <span
                       className={`text-sm font-bold ${
